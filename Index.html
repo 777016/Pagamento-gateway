@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Pagamento Seguro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f1f5f9;
+    margin: 0;
+}
+
+.header {
+    background: #00a650;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-size: 20px;
+}
+
+.container {
+    max-width: 400px;
+    margin: 40px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.valor {
+    font-size: 30px;
+    color: #00a650;
+    font-weight: bold;
+}
+
+.status {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.timer {
+    color: red;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #00a650;
+    color: white;
+    cursor: pointer;
+}
+
+.hidden { display: none; }
+</style>
+</head>
+
+<body>
+
+<div class="header">Pagamento Seguro</div>
+
+<!-- CLIENTE -->
+<div class="container" id="cliente">
+    <h2>Pagar com PIX</h2>
+    <div class="valor" id="valor">R$ 0,00</div>
+    <p id="descricao">Aguardando cobrança...</p>
+
+    <div id="qr"></div>
+
+    <button onclick="copiar()">Copiar código PIX</button>
+
+    <div class="status" id="status">Aguardando pagamento</div>
+    <div class="timer" id="timer"></div>
+</div>
+
+<!-- LOGIN -->
+<div class="container hidden" id="login">
+    <h2>Admin</h2>
+    <input type="password" id="senha" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+</div>
+
+<!-- ADMIN -->
+<div class="container hidden" id="admin">
+    <h2>Nova Cobrança</h2>
+
+    <input type="number" id="valorInput" placeholder="Valor">
+    <input type="text" id="descInput" placeholder="Descrição">
+    <input type="text" id="codigoInput" placeholder="Código PIX">
+
+    <button onclick="gerar()">Gerar Link</button>
+
+    <p id="linkGerado"></p>
+</div>
+
+<script>
+const SENHA = "153319";
+
+// rota admin
+if (window.location.pathname === "/admin") {
+    document.getElementById("cliente").classList.add("hidden");
+    document.getElementById("login").classList.remove("hidden");
+}
+
+// login
+function login() {
+    let senha = document.getElementById("senha").value;
+
+    if (senha === SENHA) {
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("admin").classList.remove("hidden");
+    } else {
+        alert("Senha incorreta");
+    }
+}
+
+// formatar valor
+function formatar(valor) {
+    return Number(valor).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+// gerar cobrança
+function gerar() {
+    let id = Date.now();
+
+    let dados = {
+        valor: document.getElementById("valorInput").value,
+        desc: document.getElementById("descInput").value,
+        codigo: document.getElementById("codigoInput").value,
+        criado: Date.now()
+    };
+
+    if (!dados.valor || !dados.codigo) {
+        alert("Preencha valor e código!");
+        return;
+    }
+
+    localStorage.setItem("cobranca_" + id, JSON.stringify(dados));
+
+    let link = window.location.origin + "/?id=" + id;
+
+    document.getElementById("linkGerado").innerText = link;
+}
+
+// copiar pix
+function copiar() {
+    if (!window.codigoPix) return;
+    navigator.clipboard.writeText(window.codigoPix);
+    alert("Código PIX copiado!");
+}
+
+// carregar cobrança
+function carregar() {
+    let params = new URLSearchParams(window.location.search);
+    let id = params.get("id");
+
+    if (!id) return;
+
+    let dados = localStorage.getItem("cobranca_" + id);
+
+    if (!dados) {
+        document.getElementById("descricao").innerText = "Cobrança não encontrada";
+        return;
+    }
+
+    dados = JSON.parse(dados);
+
+    document.getElementById("valor").innerText = formatar(dados.valor);
+    document.getElementById("descricao").innerText = dados.desc;
+
+    window.codigoPix = dados.codigo;
+
+    document.getElementById("qr").innerHTML = "";
+
+    new QRCode(document.getElementById("qr"), {
+        text: dados.codigo,
+        width: 200,
+        height: 200
+    });
+
+    iniciarTimer(dados.criado);
+}
+
+// timer
+function iniciarTimer(inicio) {
+    let duracao = 15 * 60;
+
+    let intervalo = setInterval(() => {
+        let agora = Date.now();
+        let diff = Math.floor((agora - inicio) / 1000);
+        let restante = duracao - diff;
+
+        if (restante <= 0) {
+            clearInterval(intervalo);
+            document.getElementById("status").innerText = "Expirado";
+            document.getElementById("timer").innerText = "";
+            return;
+        }
+
+        let min = Math.floor(restante / 60);
+        let seg = restante % 60;
+
+        document.getElementById("timer").innerText =
+            `Expira em ${min}:${seg.toString().padStart(2,'0')}`;
+    }, 1000);
+}
+
+// iniciar
+carregar();
+</script>
+
+</body>
+</html>

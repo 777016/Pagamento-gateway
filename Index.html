@@ -55,6 +55,14 @@ button {
     cursor: pointer;
 }
 
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
 .hidden { display: none; }
 </style>
 </head>
@@ -100,7 +108,7 @@ button {
 <script>
 const SENHA = "153319";
 
-// rota admin
+// detectar /admin
 if (window.location.pathname === "/admin") {
     document.getElementById("cliente").classList.add("hidden");
     document.getElementById("login").classList.remove("hidden");
@@ -126,25 +134,19 @@ function formatar(valor) {
     });
 }
 
-// gerar cobrança
+// gerar link universal
 function gerar() {
-    let id = Date.now();
+    let valor = document.getElementById("valorInput").value;
+    let desc = document.getElementById("descInput").value;
+    let codigo = document.getElementById("codigoInput").value;
 
-    let dados = {
-        valor: document.getElementById("valorInput").value,
-        desc: document.getElementById("descInput").value,
-        codigo: document.getElementById("codigoInput").value,
-        criado: Date.now()
-    };
-
-    if (!dados.valor || !dados.codigo) {
+    if (!valor || !codigo) {
         alert("Preencha valor e código!");
         return;
     }
 
-    localStorage.setItem("cobranca_" + id, JSON.stringify(dados));
-
-    let link = window.location.origin + "/?id=" + id;
+    let link = window.location.origin +
+        `/?valor=${encodeURIComponent(valor)}&desc=${encodeURIComponent(desc)}&pix=${encodeURIComponent(codigo)}`;
 
     document.getElementById("linkGerado").innerText = link;
 }
@@ -156,46 +158,41 @@ function copiar() {
     alert("Código PIX copiado!");
 }
 
-// carregar cobrança
+// carregar dados do link
 function carregar() {
     let params = new URLSearchParams(window.location.search);
-    let id = params.get("id");
 
-    if (!id) return;
+    let valor = params.get("valor");
+    let desc = params.get("desc");
+    let codigo = params.get("pix");
 
-    let dados = localStorage.getItem("cobranca_" + id);
-
-    if (!dados) {
-        document.getElementById("descricao").innerText = "Cobrança não encontrada";
+    if (!valor || !codigo) {
+        document.getElementById("descricao").innerText = "Cobrança inválida";
         return;
     }
 
-    dados = JSON.parse(dados);
+    document.getElementById("valor").innerText = formatar(valor);
+    document.getElementById("descricao").innerText = desc;
 
-    document.getElementById("valor").innerText = formatar(dados.valor);
-    document.getElementById("descricao").innerText = dados.desc;
-
-    window.codigoPix = dados.codigo;
-
-    document.getElementById("qr").innerHTML = "";
+    window.codigoPix = codigo;
 
     new QRCode(document.getElementById("qr"), {
-        text: dados.codigo,
+        text: codigo,
         width: 200,
         height: 200
     });
 
-    iniciarTimer(dados.criado);
+    iniciarTimer();
 }
 
-// timer
-function iniciarTimer(inicio) {
-    let duracao = 15 * 60;
+// timer 15 min
+function iniciarTimer() {
+    let tempoTotal = 15 * 60;
+    let inicio = Date.now();
 
     let intervalo = setInterval(() => {
-        let agora = Date.now();
-        let diff = Math.floor((agora - inicio) / 1000);
-        let restante = duracao - diff;
+        let diff = Math.floor((Date.now() - inicio) / 1000);
+        let restante = tempoTotal - diff;
 
         if (restante <= 0) {
             clearInterval(intervalo);

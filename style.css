@@ -1,0 +1,29 @@
+body {
+    font-family: Arial;
+    background: linear-gradient(135deg,#cc092f,#8a001f);
+}
+
+.container {
+    max-width:400px;
+    margin:40px auto;
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    text-align:center;
+}
+
+button {
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    background:#cc092f;
+    color:white;
+    border:none;
+    border-radius:10px;
+}
+
+.valor {
+    font-size:30px;
+    color:#cc092f;
+    font-weight:bold;
+}

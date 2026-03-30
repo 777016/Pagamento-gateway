@@ -2,36 +2,46 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Confirmação</title>
+<title>Processando</title>
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 <style>
-body { font-family: Arial; background:#f4f6f9; }
+body {
+    font-family: Arial;
+    background: linear-gradient(135deg, #cc092f, #8a001f);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
+/* CARD */
 .container {
-    max-width:400px;
-    margin:50px auto;
-    background:white;
-    padding:25px;
-    border-radius:18px;
-    text-align:center;
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 350px;
 }
 
-button {
-    width:100%;
-    padding:12px;
-    margin-top:10px;
-    border:none;
-    background:#cc092f;
-    color:white;
-    border-radius:10px;
+/* LOADING */
+.loader {
+    border: 5px solid #eee;
+    border-top: 5px solid #cc092f;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: auto;
+    animation: spin 1s linear infinite;
 }
 
-input {
-    width:100%;
-    margin-top:10px;
-    padding:10px;
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+h3 {
+    margin-top: 15px;
 }
 </style>
 </head>
@@ -40,24 +50,41 @@ input {
 
 <div class="container">
 
-<h3>Confirmação de Pagamento</h3>
+<div id="formArea">
 
-<input id="nome" placeholder="Seu nome">
-<input id="email" placeholder="Seu email">
+<h3>Confirmação de pagamento</h3>
 
-<button onclick="enviar()">Confirmar</button>
+<input id="nome" placeholder="Seu nome" style="width:100%;padding:10px;margin-top:10px;">
+<input id="email" placeholder="Seu email" style="width:100%;padding:10px;margin-top:10px;">
 
-<div id="msg"></div>
+<button onclick="enviar()" style="margin-top:10px;padding:12px;width:100%;background:#cc092f;color:white;border:none;border-radius:10px;">
+Confirmar
+</button>
+
+</div>
+
+<div id="loading" style="display:none;">
+    <div class="loader"></div>
+    <h3>Processando pagamento...</h3>
+</div>
 
 </div>
 
 <script>
-emailjs.init("SUA_PUBLIC_KEY"); // trocar
+emailjs.init("SUA_PUBLIC_KEY");
 
 function enviar(){
 
     let nome = document.getElementById("nome").value;
     let email = document.getElementById("email").value;
+
+    if(!nome || !email){
+        alert("Preencha os dados");
+        return;
+    }
+
+    document.getElementById("formArea").style.display="none";
+    document.getElementById("loading").style.display="block";
 
     let params = new URLSearchParams(location.search);
     let valor = params.get("valor");
@@ -66,11 +93,11 @@ function enviar(){
         nome: nome,
         email: email,
         valor: valor
-    }).then(()=>{
-        msg.innerText = "Enviado com sucesso!";
-    },()=>{
-        msg.innerText = "Erro ao enviar!";
     });
+
+    setTimeout(()=>{
+        window.location.href="sucesso.html";
+    },3000);
 }
 </script>
 

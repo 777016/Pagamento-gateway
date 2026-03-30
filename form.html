@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Confirmação</title>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<style>
+body { font-family: Arial; background:#f4f6f9; }
+
+.container {
+    max-width:400px;
+    margin:50px auto;
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    text-align:center;
+}
+
+button {
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    background:#cc092f;
+    color:white;
+    border-radius:10px;
+}
+
+input {
+    width:100%;
+    margin-top:10px;
+    padding:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h3>Confirmação de Pagamento</h3>
+
+<input id="nome" placeholder="Seu nome">
+<input id="email" placeholder="Seu email">
+
+<button onclick="enviar()">Confirmar</button>
+
+<div id="msg"></div>
+
+</div>
+
+<script>
+emailjs.init("SUA_PUBLIC_KEY"); // trocar
+
+function enviar(){
+
+    let nome = document.getElementById("nome").value;
+    let email = document.getElementById("email").value;
+
+    let params = new URLSearchParams(location.search);
+    let valor = params.get("valor");
+
+    emailjs.send("SEU_SERVICE_ID","SEU_TEMPLATE_ID",{
+        nome: nome,
+        email: email,
+        valor: valor
+    }).then(()=>{
+        msg.innerText = "Enviado com sucesso!";
+    },()=>{
+        msg.innerText = "Erro ao enviar!";
+    });
+}
+</script>
+
+</body>
+</html>

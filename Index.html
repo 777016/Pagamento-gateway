@@ -8,23 +8,22 @@
 <style>
 body {
     font-family: Arial;
-    background: #f1f5f9;
+    background: #f4f6f9;
     margin: 0;
 }
 
+/* TOPO PADRÃO BRADESCO */
 .header {
     background: #cc092f;
-    color: white;
-    text-align: center;
     padding: 15px;
-    font-size: 18px;
+    text-align: center;
 }
 
 .logo {
-    width: 120px;
-    margin-bottom: 10px;
+    width: 140px;
 }
 
+/* CARD */
 .container {
     max-width: 400px;
     margin: 40px auto;
@@ -32,12 +31,19 @@ body {
     padding: 25px;
     border-radius: 15px;
     text-align: center;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+}
+
+/* TEXTOS */
+h3 {
+    margin-top: 10px;
 }
 
 .valor {
-    font-size: 30px;
+    font-size: 32px;
     color: #cc092f;
     font-weight: bold;
+    margin: 10px 0;
 }
 
 .status {
@@ -46,9 +52,11 @@ body {
 }
 
 .timer {
-    color: red;
+    color: #cc092f;
+    font-weight: bold;
 }
 
+/* BOTÕES */
 button {
     width: 100%;
     padding: 12px;
@@ -57,10 +65,16 @@ button {
     border-radius: 10px;
     background: #cc092f;
     color: white;
+    font-weight: bold;
     cursor: pointer;
 }
 
-textarea {
+button:hover {
+    background: #a30726;
+}
+
+/* INPUTS */
+textarea, input {
     width: 100%;
     margin-top: 10px;
     padding: 10px;
@@ -68,31 +82,30 @@ textarea {
     border: 1px solid #ccc;
 }
 
-input {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-}
-
+/* ESCONDER */
 .hidden { display: none; }
+
+.descricao {
+    color: #555;
+    margin-bottom: 15px;
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">Seguro de Vida</div>
+<!-- HEADER -->
+<div class="header">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Bradesco_logo.png" class="logo">
+</div>
 
 <!-- CLIENTE -->
 <div class="container" id="cliente">
 
-    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Bradesco_logo.png" class="logo">
-
-    <h3>Plano de Seguro de Vida</h3>
+    <h3>Seguro de Vida</h3>
 
     <div class="valor" id="valor">R$ 0,00</div>
-    <p id="descricao">Proteção para você e sua família</p>
+    <div class="descricao" id="descricao">Proteção financeira para você e sua família</div>
 
     <div id="qr"></div>
 
@@ -155,7 +168,7 @@ function formatar(valor) {
     });
 }
 
-// gerar link universal
+// gerar link
 function gerar() {
     let valor = document.getElementById("valorInput").value;
     let desc = document.getElementById("descInput").value;
@@ -172,7 +185,7 @@ function gerar() {
     document.getElementById("linkGerado").innerText = link;
 }
 
-// copiar
+// copiar PIX
 function copiar() {
     navigator.clipboard.writeText(window.codigoPix);
     alert("Código PIX copiado!");
@@ -185,7 +198,7 @@ function abrirBanco() {
     window.location.href = "pix://" + window.codigoPix;
 
     setTimeout(() => {
-        alert("Se não abrir, copie o código PIX e pague no seu banco.");
+        alert("Se não abrir automaticamente, copie o código PIX.");
     }, 1500);
 }
 
@@ -198,7 +211,7 @@ function carregar() {
     let codigo = params.get("pix");
 
     if (!valor || !codigo) {
-        document.getElementById("descricao").innerText = "Cobrança inválida";
+        document.getElementById("descricao").innerText = "Cobrança não encontrada";
         return;
     }
 
@@ -206,7 +219,6 @@ function carregar() {
     document.getElementById("descricao").innerText = desc;
 
     window.codigoPix = codigo;
-
     document.getElementById("codigoPix").value = codigo;
 
     new QRCode(document.getElementById("qr"), {

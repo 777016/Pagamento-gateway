@@ -2,218 +2,34 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Pagamento Seguro</title>
+<title>Pagamento</title>
 
+<link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<style>
-body {
-    font-family: Arial;
-    margin: 0;
-    background: linear-gradient(135deg, #cc092f, #8a001f);
-}
-
-/* HEADER */
-.header {
-    padding: 20px;
-    text-align: center;
-}
-
-.logo-text {
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-/* CARD */
-.container {
-    max-width: 420px;
-    margin: 30px auto;
-    background: white;
-    padding: 25px;
-    border-radius: 20px;
-    text-align: center;
-    box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
-}
-
-/* TITULO */
-.titulo {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-/* VALOR */
-.valor {
-    font-size: 36px;
-    color: #cc092f;
-    font-weight: bold;
-    margin: 15px 0;
-}
-
-/* DETALHES */
-.detalhes {
-    text-align: left;
-    font-size: 14px;
-    color: #333;
-    margin: 15px 0;
-    line-height: 1.6;
-    background: #fafafa;
-    padding: 15px;
-    border-radius: 12px;
-}
-
-/* BOTÕES */
-button {
-    width: 100%;
-    padding: 13px;
-    margin-top: 10px;
-    border-radius: 12px;
-    border: none;
-    background: linear-gradient(90deg, #cc092f, #a30726);
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* PIX */
-textarea {
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 10px;
-}
-
-/* CADEADO */
-.seguro {
-    margin-top: 20px;
-    font-size: 13px;
-    color: #555;
-}
-
-/* TIMER */
-#timer {
-    margin-top: 10px;
-    font-size: 13px;
-    color: #888;
-}
-</style>
 </head>
 
 <body>
 
-<div class="header">
-    <div class="logo-text">Bradesco</div>
-</div>
-
 <div class="container">
 
-    <div class="titulo">Seguro de Vida</div>
+<h2>Pagamento</h2>
 
-    <div class="valor" id="valor">R$ 0,00</div>
+<div class="valor" id="valor"></div>
 
-    <div class="detalhes">
+<div id="qr"></div>
 
-    <strong>Sobre o Seguro de Vida</strong><br><br>
+<button onclick="copiar()">Copiar código</button>
 
-    O seguro de vida oferece proteção financeira para você e sua família em momentos importantes, garantindo mais tranquilidade e segurança.
+<textarea id="pix"></textarea>
 
-    <br><br>
+<button onclick="irForm()">Já paguei</button>
 
-    <strong>Coberturas incluídas:</strong><br>
-    ✔ Morte natural ou acidental<br>
-    ✔ Invalidez permanente<br>
-    ✔ Assistência funeral<br>
-    ✔ Suporte emergencial<br>
-
-    <br>
-
-    <strong>Serviços adicionais:</strong><br>
-    ✔ Atendimento 24 horas<br>
-    ✔ Orientação especializada<br>
-    ✔ Assistência residencial<br>
-    ✔ Suporte em imprevistos<br>
-
-    <br>
-
-    <strong>Vantagens:</strong><br>
-    ✔ Contratação simples<br>
-    ✔ Proteção familiar<br>
-    ✔ Pagamento facilitado<br>
-    ✔ Processo seguro<br>
-
-    </div>
-
-    <div id="qr"></div>
-
-    <button onclick="copiar()">Copiar código PIX</button>
-
-    <textarea id="codigoPix" readonly></textarea>
-
-    <button onclick="irFormulario()">Já fiz o pagamento</button>
-
-    <div id="timer"></div>
-
-    <div class="seguro">
-        🔒 Pagamento seguro<br>
-        Seus dados estão protegidos
-    </div>
+<div id="timer"></div>
 
 </div>
 
-<script>
-let tempo = 50;
-let countdown;
-
-/* CARREGAR DADOS */
-function carregar(){
-    let p = new URLSearchParams(location.search);
-
-    let valor = p.get("valor");
-    let pix = p.get("pix");
-
-    if(!valor || !pix) return;
-
-    document.getElementById("valor").innerText = "R$ " + valor;
-    document.getElementById("codigoPix").value = pix;
-
-    window.pix = pix;
-
-    new QRCode(document.getElementById("qr"), {
-        text: pix,
-        width: 200,
-        height: 200
-    });
-}
-
-/* COPIAR + TIMER */
-function copiar(){
-    navigator.clipboard.writeText(window.pix);
-    alert("Código PIX copiado!");
-
-    tempo = 50;
-
-    countdown = setInterval(()=>{
-        document.getElementById("timer").innerText =
-        "Redirecionando para confirmação em " + tempo + "s";
-
-        tempo--;
-
-        if(tempo <= 0){
-            clearInterval(countdown);
-            irFormulario();
-        }
-
-    },1000);
-}
-
-/* IR PARA FORMULÁRIO */
-function irFormulario(){
-    let params = new URLSearchParams(location.search);
-    window.location.href = "form.html?" + params.toString();
-}
-
-carregar();
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>

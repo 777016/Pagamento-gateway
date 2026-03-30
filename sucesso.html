@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Pagamento Aprovado</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* CARD */
+.container {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    width: 350px;
+}
+
+/* CHECK */
+.check {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #28a745;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    animation: pop 0.5s ease;
+}
+
+.check::after {
+    content: "✔";
+    color: white;
+    font-size: 40px;
+}
+
+@keyframes pop {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+}
+
+h2 {
+    margin-top: 20px;
+    color: #28a745;
+}
+
+p {
+    color: #555;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="check"></div>
+
+<h2>Pagamento enviado!</h2>
+
+<p>Seu pagamento está em análise.<br>
+Você receberá a confirmação em breve.</p>
+
+</div>
+
+</body>
+</html>

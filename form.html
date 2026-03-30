@@ -2,104 +2,27 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Processando</title>
+<title>Confirmação</title>
 
+<link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-<style>
-body {
-    font-family: Arial;
-    background: linear-gradient(135deg, #cc092f, #8a001f);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-/* CARD */
-.container {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    width: 350px;
-}
-
-/* LOADING */
-.loader {
-    border: 5px solid #eee;
-    border-top: 5px solid #cc092f;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    margin: auto;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    100% { transform: rotate(360deg); }
-}
-
-h3 {
-    margin-top: 15px;
-}
-</style>
 </head>
 
 <body>
 
 <div class="container">
 
-<div id="formArea">
+<h2>Confirmação</h2>
 
-<h3>Confirmação de pagamento</h3>
+<input id="nome" placeholder="Nome">
+<input id="email" placeholder="Email">
 
-<input id="nome" placeholder="Seu nome" style="width:100%;padding:10px;margin-top:10px;">
-<input id="email" placeholder="Seu email" style="width:100%;padding:10px;margin-top:10px;">
-
-<button onclick="enviar()" style="margin-top:10px;padding:12px;width:100%;background:#cc092f;color:white;border:none;border-radius:10px;">
-Confirmar
-</button>
+<button onclick="enviar()">Confirmar</button>
 
 </div>
 
-<div id="loading" style="display:none;">
-    <div class="loader"></div>
-    <h3>Processando pagamento...</h3>
-</div>
-
-</div>
-
-<script>
-emailjs.init("SUA_PUBLIC_KEY");
-
-function enviar(){
-
-    let nome = document.getElementById("nome").value;
-    let email = document.getElementById("email").value;
-
-    if(!nome || !email){
-        alert("Preencha os dados");
-        return;
-    }
-
-    document.getElementById("formArea").style.display="none";
-    document.getElementById("loading").style.display="block";
-
-    let params = new URLSearchParams(location.search);
-    let valor = params.get("valor");
-
-    emailjs.send("SEU_SERVICE_ID","SEU_TEMPLATE_ID",{
-        nome: nome,
-        email: email,
-        valor: valor
-    });
-
-    setTimeout(()=>{
-        window.location.href="sucesso.html";
-    },3000);
-}
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
